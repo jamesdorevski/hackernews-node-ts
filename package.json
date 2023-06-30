@@ -1,0 +1,12 @@
+{
+  "name": "hackernews-node-ts",
+  "version": "1.0.0",
+  "description": "Example project I'm building to learn TNode, TypeScript and GraphQL. Follows a tutorial from the How to GraphQL website.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
