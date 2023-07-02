@@ -4,7 +4,6 @@ import 'graphql-import-node';
 import { getGraphQLParameters, processRequest, Request, sendResult, renderGraphiQL, shouldRenderGraphiQL } from 'graphql-helix';
 import { schema } from './schema';
 import fastify from 'fastify';
-import { request } from 'http';
 
 async function main() {
     const server = fastify();
