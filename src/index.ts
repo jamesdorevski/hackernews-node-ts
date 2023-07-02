@@ -1,5 +1,3 @@
-console.log("Hello World, from TypeScript!");
-
 import "graphql-import-node";
 import { getGraphQLParameters, processRequest, Request, sendResult, renderGraphiQL, shouldRenderGraphiQL } from "graphql-helix";
 import { schema } from "./schema";
@@ -41,7 +39,7 @@ async function main() {
                 request,
                 schema,
                 operationName,
-                contextFactory,
+                contextFactory: () => contextFactory(req),
                 query,
                 variables,
             });
