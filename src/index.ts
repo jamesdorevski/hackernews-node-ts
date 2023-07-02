@@ -3,6 +3,7 @@ console.log('Hello World, from TypeScript!');
 import 'graphql-import-node';
 import { getGraphQLParameters, processRequest, Request, sendResult, renderGraphiQL, shouldRenderGraphiQL } from 'graphql-helix';
 import { schema } from './schema';
+import { contextFactory } from "./context";
 import fastify from 'fastify';
 
 async function main() {
@@ -40,6 +41,7 @@ async function main() {
                 request,
                 schema,
                 operationName,
+                contextFactory,
                 query,
                 variables,
             });
