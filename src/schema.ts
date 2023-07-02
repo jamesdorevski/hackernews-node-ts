@@ -24,6 +24,19 @@ const resolvers = {
         id: (parent: Link) => parent.id,
         description: (parent: Link) => parent.description,
         url: (parent: Link) => parent.url,
+        postedBy: async (parent: Link, args: {}, context: GraphQLContext) => {
+            if (!parent.postedById) {
+                return null;
+            }
+
+            return context.prisma.link
+                .findUnique({ where: { id: parent.id }})
+                .postedBy();
+        },
+    },
+    User: {
+        links: (parent: User, args: {}, context: GraphQLContext) => 
+            context.prisma.user.findUnique({ where: { id: parent.id } }).links(),
     },
     Mutation: {
         signup: async (
@@ -82,10 +95,19 @@ const resolvers = {
             args: { description: string, url: string },
             context: GraphQLContext
         ) => {
+            if (context.currUser === null) {
+                return new Error("Unauthenticated!");
+            }
+
             const newLink = context.prisma.link.create({
                 data: {
                     url: args.url,
                     description: args.description,
+                    postedBy: {
+                        connect: {
+                            id: context.currUser.id
+                        }
+                    }
                 }
             });
 
