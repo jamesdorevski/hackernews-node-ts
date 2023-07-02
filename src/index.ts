@@ -1,15 +1,15 @@
-console.log('Hello World, from TypeScript!');
+console.log("Hello World, from TypeScript!");
 
-import 'graphql-import-node';
-import { getGraphQLParameters, processRequest, Request, sendResult, renderGraphiQL, shouldRenderGraphiQL } from 'graphql-helix';
-import { schema } from './schema';
+import "graphql-import-node";
+import { getGraphQLParameters, processRequest, Request, sendResult, renderGraphiQL, shouldRenderGraphiQL } from "graphql-helix";
+import { schema } from "./schema";
 import { contextFactory } from "./context";
-import fastify from 'fastify';
+import fastify from "fastify";
 
 async function main() {
     const server = fastify();
 
-    server.get('/', (req, resp) => {
+    server.get("/", (req, resp) => {
         resp.send({ test: true});
     });
 
@@ -51,7 +51,7 @@ async function main() {
     });
 
     server.listen(8080, "0.0.0.0", () => {
-        console.log('Server is running on http://localhost:8080/');
+        console.log("Server is running on http://localhost:8080/");
     });
 }
 

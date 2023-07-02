@@ -1,14 +1,14 @@
-import { makeExecutableSchema } from '@graphql-tools/schema';
-import typeDefs from './schema.graphql';
-import { GraphQLContext } from './context';
-import { Link, User } from '@prisma/client';
-import { APP_SECRET } from './auth';
-import { hash, compare } from 'bcryptjs';
-import { sign } from 'jsonwebtoken';
+import { makeExecutableSchema } from "@graphql-tools/schema";
+import typeDefs from "./schema.graphql";
+import { GraphQLContext } from "./context";
+import { Link, User } from "@prisma/client";
+import { APP_SECRET } from "./auth";
+import { hash, compare } from "bcryptjs";
+import { sign } from "jsonwebtoken";
 
 const resolvers = {
     Query: {
-        info: () => 'Test',
+        info: () => "Test",
         feed: async (parent: unknown, args: {}, context: GraphQLContext) => {
             return context.prisma.link.findMany();
         },
@@ -39,7 +39,7 @@ const resolvers = {
             return {
                 token,
                 user,
-            }
+            };
         },
         login: async (
             parent: unknown,
