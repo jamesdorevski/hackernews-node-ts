@@ -1,7 +1,10 @@
 import { makeExecutableSchema } from '@graphql-tools/schema';
 import typeDefs from './schema.graphql';
 import { GraphQLContext } from './context';
-import { Link } from '@prisma/client';
+import { Link, User } from '@prisma/client';
+import { APP_SECRET } from './auth';
+import { hash, compare } from 'bcryptjs';
+import { sign } from 'jsonwebtoken';
 
 const resolvers = {
     Query: {
@@ -16,6 +19,57 @@ const resolvers = {
         url: (parent: Link) => parent.url,
     },
     Mutation: {
+        signup: async (
+            parent: unknown,
+            args: { 
+                email: string; 
+                password: string; 
+                name: string;
+            },
+            context: GraphQLContext
+        ) => {
+            const password = await hash(args.password, APP_SECRET);
+
+            const user = await context.prisma.user.create({
+                data: { ...args, password },
+            });
+
+            const token = sign({ userId: user.id}, APP_SECRET);
+
+            return {
+                token,
+                user,
+            }
+        },
+        login: async (
+            parent: unknown,
+            args: { 
+                email: string;
+                password: string;
+            },
+            context: GraphQLContext
+        ) => {
+            const user = await context.prisma.user.findUnique({
+                where: {
+                    email: args.email
+                },
+            });
+            if (!user) {
+                throw new Error("No user found");
+            }
+
+            const validPassword = await compare(args.password, user.password);
+            if (!validPassword) {
+                throw new Error("Invalid password");
+            }
+
+            const token = sign({ userId: user.id }, APP_SECRET);
+
+            return {
+                token,
+                user,
+            };
+        },
         post: async (
             parent: unknown, 
             args: { description: string, url: string },
