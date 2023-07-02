@@ -28,7 +28,7 @@ const resolvers = {
             },
             context: GraphQLContext
         ) => {
-            const password = await hash(args.password, APP_SECRET);
+            const password = await hash(args.password, 10);
 
             const user = await context.prisma.user.create({
                 data: { ...args, password },
