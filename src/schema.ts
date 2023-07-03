@@ -5,6 +5,7 @@ import { Link, User } from "@prisma/client";
 import { APP_SECRET } from "./auth";
 import { hash, compare } from "bcryptjs";
 import { sign } from "jsonwebtoken";
+import { PubSubChannels } from "./pubsub";
 
 const resolvers = {
     Query: {
@@ -99,7 +100,7 @@ const resolvers = {
                 return new Error("Unauthenticated!");
             }
 
-            const newLink = context.prisma.link.create({
+            const result = await context.prisma.link.create({
                 data: {
                     url: args.url,
                     description: args.description,
@@ -110,10 +111,22 @@ const resolvers = {
                     }
                 }
             });
+            
+            context.pubSub.publish("newLink", { createdLink: result });
 
-            return newLink;
+            return result;
         },
     },
+    Subscription: {
+        newLink: {
+            subscribe: (parent: unknown, args: {}, context: GraphQLContext) => {
+                return context.pubSub.asyncIterator("newLink");
+            },
+            resolve: (payload: PubSubChannels["newLink"][0]) => {
+                return payload.createdLink;
+            },
+        }
+    }
 };
 
 export const schema = makeExecutableSchema({

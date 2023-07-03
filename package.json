@@ -26,11 +26,14 @@
   },
   "dependencies": {
     "@graphql-tools/schema": "^10.0.0",
+    "@types/graphql": "^14.5.0",
     "bcryptjs": "^2.4.3",
     "fastify": "^4.19.0",
     "graphql": "^16.7.1",
     "graphql-helix": "^1.13.0",
     "graphql-import-node": "^0.0.5",
-    "jsonwebtoken": "^9.0.0"
+    "graphql-subscriptions": "^2.0.0",
+    "jsonwebtoken": "^9.0.0",
+    "typed-graphql-subscriptions": "^0.0.1"
   }
 }
