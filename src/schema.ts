@@ -34,10 +34,18 @@ const resolvers = {
                 .findUnique({ where: { id: parent.id }})
                 .postedBy();
         },
+        votes: (parent: Link, args: {}, context: GraphQLContext) =>
+            context.prisma.link.findUnique({ where: { id: parent.id } }).votes(),
     },
     User: {
         links: (parent: User, args: {}, context: GraphQLContext) => 
             context.prisma.user.findUnique({ where: { id: parent.id } }).links(),
+    },
+    Vote: {
+        link: (parent: User, args: {}, context: GraphQLContext) =>
+            context.prisma.vote.findUnique({ where: { id: parent.id } }).link(),
+        user: (parent: User, args: {}, context: GraphQLContext) =>
+            context.prisma.vote.findUnique({ where: { id: parent.id } }).user(),
     },
     Mutation: {
         signup: async (
@@ -115,6 +123,41 @@ const resolvers = {
             context.pubSub.publish("newLink", { createdLink: result });
 
             return result;
+        },
+        vote: async (
+            parent: unknown,
+            args: { linkId: string },
+            context: GraphQLContext
+        ) => {
+            if (!context.currUser) {
+                throw new Error("You must login in order to vote!");
+            }
+
+            const userId = context.currUser.id;
+
+            const vote = await context.prisma.vote.findUnique({
+                where: {
+                    linkId_userId: {
+                        linkId: Number(args.linkId),
+                        userId: userId,
+                    }
+                }
+            });
+
+            if (vote !== null) {
+                throw new Error(`Already voted for link: ${args.linkId}`);
+            }
+
+            const newVote = await context.prisma.vote.create({
+                data: {
+                    user: { connect: { id: userId } },
+                    link: { connect: { id: Number(args.linkId) } },
+                },
+            });
+
+            context.pubSub.publish("newVote", { createdVote: newVote });
+
+            return newVote;
         },
     },
     Subscription: {
